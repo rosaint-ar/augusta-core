@@ -1,0 +1,73 @@
+/* Augusta Core — base visual (manual de marca v01: fondos claros, violeta #70547B, Fraunces para títulos y números) */
+:root {
+  --violeta: #70547B; --lavanda: #9873A6; --ciruela: #604668; --morado: #735B84;
+  --lila: #E6DEF0; --lila-2: #F1ECF6; --blanco: #F7F8F4; --papel: #FFFFFF;
+  --tinta: #465362; --tinta-2: #6B7480; --tinta-3: #98A0A9; --linea: #E4DFE8; --linea-2: #EFEBF2;
+  --agua: #94D8CB;
+  --bien: #2E7D5B; --mal: #B4443E;
+  --f-titulo: 'Fraunces', Georgia, serif; --f-ui: 'DM Sans', system-ui, sans-serif; --f-texto: 'Source Sans 3', system-ui, sans-serif;
+  --radio: 14px; --sombra: 0 1px 2px rgba(70,83,98,.06), 0 6px 24px -12px rgba(112,84,123,.18);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--blanco); color: var(--tinta); font: 400 15px/1.45 var(--f-texto); -webkit-font-smoothing: antialiased; }
+a { color: var(--violeta); }
+button { font: inherit; }
+
+/* ---------- estructura ---------- */
+.app { display: grid; grid-template-columns: 248px 1fr; min-height: 100vh; }
+.lateral { position: sticky; top: 0; height: 100vh; background: var(--papel); border-right: 1px solid var(--linea); display: flex; flex-direction: column; padding: 22px 14px 16px; }
+.lateral .marca { display: block; padding: 0 10px 18px; }
+.lateral .marca img { width: 128px; display: block; }
+.lateral .marca small { display: block; margin-top: 6px; font: 600 10.5px/1 var(--f-ui); letter-spacing: .16em; text-transform: uppercase; color: var(--lavanda); }
+.menu { display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
+.menu .grupo { font: 700 10.5px/1 var(--f-ui); letter-spacing: .12em; text-transform: uppercase; color: var(--tinta-3); padding: 16px 10px 8px; }
+.menu a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; color: var(--tinta); text-decoration: none; font: 500 14px/1.2 var(--f-ui); }
+.menu a svg { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; opacity: .8; }
+.menu a:hover { background: var(--lila-2); }
+.menu a.activo { background: var(--lila); color: var(--ciruela); font-weight: 700; }
+.menu a.pronto { color: var(--tinta-3); }
+.menu a.pronto::after { content: 'pronto'; margin-left: auto; font: 600 10px/1 var(--f-ui); color: var(--tinta-3); border: 1px solid var(--linea); border-radius: 99px; padding: 3px 6px; }
+.lateral .pie { margin-top: auto; padding: 12px 10px 0; border-top: 1px solid var(--linea-2); font: 500 12.5px/1.3 var(--f-ui); color: var(--tinta-2); }
+.lateral .pie button { background: none; border: 0; padding: 0; color: var(--violeta); cursor: pointer; font: 600 12.5px var(--f-ui); margin-top: 6px; }
+
+.principal { min-width: 0; display: flex; flex-direction: column; }
+.barra { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 14px; padding: 14px 32px; background: rgba(247,248,244,.88); backdrop-filter: blur(10px); border-bottom: 1px solid var(--linea-2); }
+.barra h1 { margin: 0; font: 500 24px/1.1 var(--f-titulo); color: var(--violeta); }
+.barra .sub { font: 400 13.5px/1.2 var(--f-texto); color: var(--tinta-2); }
+.barra .der { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.barra .abrir-menu svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; display: block; }
+.barra .abrir-menu { display: none; background: none; border: 0; padding: 4px; cursor: pointer; color: var(--violeta); }
+.contenido { padding: 24px 32px 64px; max-width: 1360px; width: 100%; }
+
+/* ---------- piezas ---------- */
+.tarjeta { background: var(--papel); border: 1px solid var(--linea); border-radius: var(--radio); box-shadow: var(--sombra); padding: 20px 22px; }
+.tarjeta > h2, .seccion-t { margin: 0 0 4px; font: 500 19px/1.2 var(--f-titulo); color: var(--violeta); }
+.tarjeta > .ayuda, .ayuda { margin: 0 0 14px; color: var(--tinta-2); font-size: 13.5px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--linea); background: var(--papel); color: var(--tinta); border-radius: 99px; padding: 7px 13px; font: 600 13px/1 var(--f-ui); cursor: pointer; white-space: nowrap; }
+.chip:hover { border-color: var(--lavanda); }
+.chip.activo { background: var(--violeta); border-color: var(--violeta); color: #fff; }
+.boton { display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 10px; background: var(--violeta); color: #fff; font: 700 14px/1 var(--f-ui); padding: 11px 16px; cursor: pointer; }
+.boton.sec { background: var(--lila); color: var(--ciruela); }
+.num { font-family: var(--f-titulo); font-variant-numeric: lining-nums; }
+.tab { font-variant-numeric: tabular-nums lining-nums; }
+.aviso { border: 1px solid var(--linea); background: var(--lila-2); color: var(--ciruela); border-radius: 12px; padding: 12px 14px; font-size: 14px; }
+.cargando { display: grid; place-items: center; min-height: 50vh; color: var(--tinta-2); font: 500 15px var(--f-ui); }
+.cargando::before { content: ''; width: 34px; height: 34px; margin-bottom: 14px; border-radius: 50%; border: 3px solid var(--lila); border-top-color: var(--violeta); animation: gira 0.9s linear infinite; }
+@keyframes gira { to { transform: rotate(360deg); } }
+
+/* sello de marca de agua al 7%, una sola vez por pantalla */
+.contenido { position: relative; }
+.sello-fondo { position: fixed; right: -60px; bottom: -40px; width: 420px; opacity: .07; pointer-events: none; z-index: 0; }
+
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+  .lateral { position: fixed; z-index: 20; left: 0; width: 260px; transform: translateX(-100%); transition: transform .2s ease; box-shadow: 0 0 40px rgba(0,0,0,.15); }
+  body.menu-abierto .lateral { transform: none; }
+  .barra { padding: 12px 16px; }
+  .barra .abrir-menu { display: block; }
+  .barra h1 { font-size: 20px; }
+  .contenido { padding: 16px 16px 48px; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

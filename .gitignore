@@ -1,0 +1,6 @@
+_local/
+*.accdb
+*.laccdb
+*.csv
+node_modules/
+desktop.ini

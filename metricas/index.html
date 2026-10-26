@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="app-root" content="../">
+<title>Métricas · Augusta Core</title>
+<link rel="icon" href="../shell/simbolo-augusta.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shell/shell.css">
+<style>
+  /* colores de canal: validados para daltonismo (orden fijo; el color sigue al canal, nunca al ranking) */
+  :root { --c-local: #7B4FA0; --c-tn: #1E9E86; --c-ml: #E0892B; --c-wsp: #2F6FCB; --c-cli: #D45487;
+          --a-1: #D9CBE3; --a-2: #B49BC8; --a-3: #8C6AA8; --a-4: #5B3A78; --grilla: #EEEAF1; }
+  .filtros { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-bottom: 18px; position: relative; z-index: 1; }
+  .filtros .grupo { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .filtros .grupo > span { font: 700 10.5px/1 var(--f-ui); letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-3); margin-right: 4px; }
+  .filtros select { font: 600 13px var(--f-ui); color: var(--tinta); border: 1px solid var(--linea); background: var(--papel); border-radius: 99px; padding: 6px 10px; }
+  .chip .pt { width: 9px; height: 9px; border-radius: 50%; }
+  .chip.apagado { opacity: .45; text-decoration: line-through; }
+  .nota-datos { font-size: 12.5px; color: var(--tinta-2); margin: -6px 0 18px; position: relative; z-index: 1; }
+
+  .grilla { display: grid; gap: 18px; position: relative; z-index: 1; }
+  .g-kpi { grid-template-columns: 1.35fr repeat(3, 1fr); }
+  .g-2 { grid-template-columns: 1fr 1fr; }
+  .hero { background: linear-gradient(160deg, var(--lila) 0%, var(--lila-2) 70%); border-color: #DCD0E8; display: flex; flex-direction: column; }
+  .hero .et { font: 600 13px var(--f-ui); color: var(--ciruela); }
+  .hero .valor { font: 500 52px/1 var(--f-titulo); color: var(--violeta); margin: 12px 0 10px; letter-spacing: -.01em; }
+  .hero .det { font-size: 14px; color: var(--tinta); margin-top: auto; }
+  .kpi .et { font: 600 12.5px var(--f-ui); color: var(--tinta-2); }
+  .kpi .valor { font: 500 30px/1.05 var(--f-titulo); color: var(--tinta); margin: 10px 0 6px; }
+  .kpi .det { font-size: 13px; color: var(--tinta-2); }
+  .delta { display: inline-flex; align-items: center; gap: 4px; font: 700 12.5px var(--f-ui); border-radius: 99px; padding: 3px 8px; }
+  .delta.sube { color: var(--bien); background: #E3F1EA; }
+  .delta.baja { color: var(--mal); background: #F7E4E2; }
+  .delta.igual { color: var(--tinta-2); background: var(--linea-2); }
+  .kpis-chicos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+
+  .cab { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+  .cab h2 { margin: 0; font: 500 19px/1.2 var(--f-titulo); color: var(--violeta); }
+  .cab .ayuda { margin: 4px 0 0; }
+  .cab .ops { display: flex; gap: 6px; flex-wrap: wrap; }
+  .leyenda { display: flex; flex-wrap: wrap; gap: 6px 16px; font: 500 13px var(--f-ui); color: var(--tinta); margin: 4px 0 10px; }
+  .leyenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .leyenda i.linea { height: 3px; border-radius: 2px; width: 16px; vertical-align: 3px; }
+  svg.graf { width: 100%; display: block; overflow: visible; }
+  svg.graf text { font: 500 11.5px var(--f-ui); fill: var(--tinta-2); }
+  svg.graf .eje { stroke: var(--grilla); stroke-width: 1; }
+  svg.graf .base { stroke: #D8D2DD; stroke-width: 1; }
+  .tip { position: fixed; z-index: 50; pointer-events: none; background: var(--papel); border: 1px solid var(--linea); border-radius: 12px; box-shadow: 0 10px 30px -10px rgba(70,83,98,.35); padding: 10px 12px; font-size: 13px; min-width: 190px; display: none; }
+  .tip b { font: 700 13px var(--f-ui); color: var(--ciruela); display: block; margin-bottom: 6px; }
+  .tip .f { display: flex; justify-content: space-between; gap: 14px; }
+  .tip .f span:first-child { display: flex; align-items: center; gap: 6px; color: var(--tinta-2); }
+  .tip .f i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+  .tip .tot { border-top: 1px solid var(--linea-2); margin-top: 6px; padding-top: 6px; font-weight: 600; }
+
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.t th { text-align: left; font: 700 11px var(--f-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--tinta-3); padding: 0 10px 8px; border-bottom: 1px solid var(--linea); white-space: nowrap; cursor: pointer; user-select: none; }
+  table.t th.n, table.t td.n { text-align: right; }
+  table.t td { padding: 9px 10px; border-bottom: 1px solid var(--linea-2); vertical-align: middle; }
+  table.t td.n { font-variant-numeric: tabular-nums lining-nums; white-space: nowrap; }
+  table.t tr:hover td { background: #FBFAFC; }
+  table.t .nombre { font-weight: 600; color: var(--tinta); }
+  table.t .sub { color: var(--tinta-3); font-size: 12.5px; }
+  .barrita { position: relative; height: 6px; background: var(--linea-2); border-radius: 99px; min-width: 70px; }
+  .barrita > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px; background: var(--lavanda); }
+  .tabla-scroll { overflow-x: auto; }
+  .buscar { font: 400 14px var(--f-texto); border: 1px solid var(--linea); border-radius: 99px; padding: 7px 14px; min-width: 200px; outline: none; }
+  .buscar:focus { border-color: var(--lavanda); }
+  .ver-mas { margin-top: 12px; }
+
+  .barras-h .fila { display: grid; grid-template-columns: 150px 1fr auto; gap: 12px; align-items: center; padding: 7px 0; }
+  .barras-h .fila .lbl { font: 600 13.5px var(--f-ui); display: flex; align-items: center; gap: 8px; }
+  .barras-h .fila .lbl i { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .barras-h .pista { height: 14px; background: var(--linea-2); border-radius: 4px; overflow: hidden; }
+  .barras-h .pista i { display: block; height: 100%; border-radius: 0 4px 4px 0; }
+  .barras-h .val { text-align: right; font-size: 13.5px; min-width: 150px; }
+  .barras-h .val .sub { color: var(--tinta-3); font-size: 12px; margin-left: 6px; }
+  .vacio { color: var(--tinta-3); padding: 24px 0; text-align: center; }
+  .pie-nota { font-size: 12.5px; color: var(--tinta-3); margin-top: 10px; }
+
+  @media (max-width: 1100px) { .g-kpi { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 760px) { .g-kpi, .g-2, .kpis-chicos { grid-template-columns: 1fr; } .hero .valor { font-size: 42px; } .barras-h .fila { grid-template-columns: 110px 1fr; } .barras-h .val { grid-column: 1 / -1; text-align: left; } }
+</style>
+</head>
+<body data-page="metricas" data-title="Métricas" data-subtitle="Ventas, márgenes, canales y productos desde diciembre 2022">
+<main id="contenido"><div class="cargando">Juntando cuatro años de ventas…</div></main>
+<div class="tip" id="tip" role="tooltip"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="../shared/supabase.js"></script>
+<script src="../shell/shell.js"></script>
+<script src="metricas.js"></script>
+</body>
+</html>
