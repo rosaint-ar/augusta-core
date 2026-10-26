@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="app-root" content="../">
+<title>Stock y compras · Augusta Core</title>
+<link rel="icon" href="../shell/simbolo-augusta.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shell/shell.css">
+<style>
+  .grilla { display: grid; gap: 18px; position: relative; z-index: 1; margin-bottom: 18px; }
+  .g-4 { grid-template-columns: repeat(4, 1fr); } .g-2 { grid-template-columns: 1fr 1fr; }
+  .kpi .et { font: 600 12.5px var(--f-ui); color: var(--tinta-2); }
+  .kpi .valor { font: 500 30px/1.05 var(--f-titulo); margin: 10px 0 6px; color: var(--tinta); }
+  .kpi .det { font-size: 13px; color: var(--tinta-2); }
+  .kpi.destacado { background: linear-gradient(160deg, var(--lila) 0%, var(--lila-2) 70%); border-color: #DCD0E8; }
+  .kpi.destacado .valor { color: var(--violeta); }
+  .cab { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+  .cab h2 { margin: 0; font: 500 19px/1.2 var(--f-titulo); color: var(--violeta); }
+  .cab .ayuda { margin: 4px 0 0; max-width: 760px; }
+  .ops { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .ops > span { font: 700 10.5px/1 var(--f-ui); letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-3); margin: 0 2px 0 6px; }
+  .ops select { font: 600 13px var(--f-ui); color: var(--tinta); border: 1px solid var(--linea); background: var(--papel); border-radius: 99px; padding: 6px 10px; }
+  .prov-fila td { background: var(--lila-2); font-weight: 700; color: var(--ciruela); border-bottom: 1px solid #DCD0E8; }
+  .prov-fila td .sub { font-weight: 500; }
+  table.t tbody tr.prov-fila:hover td { background: var(--lila-2); }
+  .sug { font: 700 14px var(--f-ui); color: var(--violeta); }
+  .barrita { position: relative; height: 6px; background: var(--linea-2); border-radius: 99px; min-width: 70px; }
+  .barrita > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px; background: var(--lavanda); }
+  .barras-h .fila { display: grid; grid-template-columns: 170px 1fr auto; gap: 12px; align-items: center; padding: 7px 0; }
+  .barras-h .lbl { font: 600 13.5px var(--f-ui); }
+  .barras-h .pista { height: 14px; background: var(--linea-2); border-radius: 4px; overflow: hidden; }
+  .barras-h .pista i { display: block; height: 100%; border-radius: 0 4px 4px 0; }
+  .barras-h .val { text-align: right; font-size: 13.5px; min-width: 170px; font-variant-numeric: tabular-nums; }
+  .barras-h .val .sub { color: var(--tinta-3); font-size: 12px; margin-left: 6px; }
+  .buscar { font: 400 14px var(--f-texto); border: 1px solid var(--linea); border-radius: 99px; padding: 7px 14px; min-width: 200px; outline: none; background: var(--papel); }
+  .pie-nota { font-size: 12.5px; color: var(--tinta-3); margin-top: 10px; }
+  .vacio { color: var(--tinta-3); padding: 20px 0; text-align: center; }
+  @media (max-width: 1100px) { .g-4 { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 760px) { .g-4, .g-2 { grid-template-columns: 1fr; } .barras-h .fila { grid-template-columns: 120px 1fr; } .barras-h .val { grid-column: 1 / -1; text-align: left; } }
+</style>
+</head>
+<body data-page="stock" data-title="Stock y compras" data-subtitle="Qué comprar, cuánta plata hay en mercadería y cómo rinde cada proveedor">
+<main id="contenido"><div class="cargando">Revisando estantes y facturas de proveedores…</div></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="../shared/supabase.js"></script>
+<script src="../shell/shell.js"></script>
+<script src="stock.js"></script>
+</body>
+</html>
