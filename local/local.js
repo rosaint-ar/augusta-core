@@ -17,6 +17,7 @@
   const PRESETS = [
     { id: '12m', label: 'Últimos 12 meses', d1: dmas(anioMenos(HASTA), 1), d2: HASTA },
     { id: '6m', label: 'Últimos 6 meses', d1: dmas(HASTA, -182), d2: HASTA },
+    { id: '3m', label: 'Últimos 3 meses', d1: dmas(HASTA, -91), d2: HASTA },
     ...anios.slice().reverse().map(y => ({ id: y, label: y === HASTA.slice(0, 4) ? `${y} hasta hoy` : y, d1: `${y}-01-01`, d2: y === HASTA.slice(0, 4) ? HASTA : `${y}-12-31` })),
     { id: 'todo', label: 'Todo', d1: '2022-12-01', d2: HASTA }];
   // lo que cuesta abrir cada turno (atención); valores de Diego al 20/10/2026, editables

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="app-root" content="../">
+<title>Clima y temporadas · Augusta Core</title>
+<link rel="icon" href="../shell/simbolo-augusta.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shell/shell.css">
+<style>
+  :root { --frio: #2a78d6; --frio-2: #cde2fb; --calor: #e34948; --calor-2: #f9dcd9; --neutro: #f0efec; }
+  .grilla { display: grid; gap: 18px; position: relative; z-index: 1; margin-bottom: 18px; }
+  .g-3 { grid-template-columns: 1.3fr 1fr 1fr; } .g-2 { grid-template-columns: 1fr 1fr; }
+  .cab { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+  .cab h2 { margin: 0; font: 500 19px/1.2 var(--f-titulo); color: var(--violeta); }
+  .cab .ayuda { margin: 4px 0 0; max-width: 820px; }
+  .ops { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .hero { background: linear-gradient(160deg, var(--lila) 0%, var(--lila-2) 70%); border-color: #DCD0E8; }
+  .hero .et { font: 600 13px var(--f-ui); color: var(--ciruela); }
+  .hero .valor { font: 500 44px/1 var(--f-titulo); color: var(--violeta); margin: 10px 0 6px; }
+  .hero .det { font-size: 14px; color: var(--tinta); }
+  .kpi .et { font: 600 12.5px var(--f-ui); color: var(--tinta-2); }
+  .kpi .valor { font: 500 30px/1.05 var(--f-titulo); margin: 10px 0 6px; color: var(--tinta); }
+  .kpi .det { font-size: 13px; color: var(--tinta-2); }
+  .temp { display: inline-flex; align-items: center; justify-content: center; min-width: 46px; font: 700 12.5px var(--f-ui); border-radius: 99px; padding: 3px 8px; font-variant-numeric: tabular-nums; }
+  .temporada { display: inline-flex; align-items: center; gap: 5px; font: 700 11.5px var(--f-ui); border-radius: 99px; padding: 3px 9px; white-space: nowrap; }
+  .t-frio { color: #0d366b; background: #cde2fb; } .t-fresco { color: #184f95; background: #e6f0fc; } .t-templado { color: #6a5a1a; background: #f4ecd2; } .t-calor { color: #8a2321; background: #f9dcd9; }
+  .clima-p { display: inline-flex; align-items: center; gap: 5px; font: 700 11.5px var(--f-ui); border-radius: 99px; padding: 3px 9px; white-space: nowrap; }
+  .c-frio { color: #0d366b; background: #cde2fb; } .c-calor { color: #8a2321; background: #f9dcd9; } .c-todo { color: var(--tinta-2); background: var(--linea-2); }
+  .opor { display: grid; gap: 12px; }
+  .opor .item { border: 1px solid var(--linea); border-radius: 12px; padding: 14px 16px; background: var(--papel); display: grid; grid-template-columns: 1fr auto; gap: 6px 16px; }
+  .opor .item h3 { margin: 0; font: 700 15px var(--f-ui); color: var(--tinta); }
+  .opor .item .sub { color: var(--tinta-2); font-size: 13px; }
+  .opor .item .por { grid-column: 1 / -1; font-size: 14px; color: var(--tinta); }
+  .opor .item .zonas { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; }
+  .zona-chip { border: 1px solid var(--linea); border-radius: 10px; padding: 6px 10px; font-size: 12.5px; background: var(--blanco); }
+  .zona-chip b { font: 700 12.5px var(--f-ui); color: var(--ciruela); }
+  .opor .item .val { text-align: right; font: 600 14px var(--f-ui); color: var(--tinta); }
+  .opor .item .val small { display: block; font: 500 12px var(--f-texto); color: var(--tinta-3); }
+  .cal { border-collapse: separate; border-spacing: 2px; font-size: 11.5px; width: 100%; }
+  .cal th { font: 600 11px var(--f-ui); color: var(--tinta-3); padding: 2px 4px; text-align: center; white-space: nowrap; }
+  .cal th.z { text-align: left; font: 600 12.5px var(--f-ui); color: var(--tinta); white-space: nowrap; padding-right: 8px; }
+  .cal td { height: 26px; min-width: 36px; text-align: center; border-radius: 5px; font: 600 11px var(--f-ui); font-variant-numeric: tabular-nums; }
+  .cal td.hoy { box-shadow: inset 0 0 0 2px var(--violeta); }
+  .spark { display: block; }
+  .pie-nota { font-size: 12.5px; color: var(--tinta-3); margin-top: 10px; }
+  .vacio { color: var(--tinta-3); padding: 18px 0; text-align: center; }
+  .buscar { font: 400 14px var(--f-texto); border: 1px solid var(--linea); border-radius: 99px; padding: 7px 14px; min-width: 200px; outline: none; background: var(--papel); }
+  @media (max-width: 1100px) { .g-3 { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 760px) { .g-3, .g-2 { grid-template-columns: 1fr; } .opor .item { grid-template-columns: 1fr; } .opor .item .val { text-align: left; } }
+</style>
+</head>
+<body data-page="clima" data-title="Clima y temporadas" data-subtitle="Qué es temporada dónde: para mover el stock que ya no es de temporada en Río Cuarto hacia donde sí lo es">
+<main id="contenido"><div class="cargando">Mirando el pronóstico de todo el país…</div></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="../shared/supabase.js"></script>
+<script src="../shell/shell.js"></script>
+<script src="clima.js"></script>
+</body>
+</html>

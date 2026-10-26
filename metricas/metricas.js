@@ -31,6 +31,7 @@
   const anios = [...new Set(D.dias.map(d => d[0].slice(0, 4)))].sort();
   const PRESETS = [
     { id: 'anio', label: `${HASTA.slice(0, 4)} hasta hoy`, d1: `${HASTA.slice(0, 4)}-01-01`, d2: HASTA },
+    { id: '3m', label: 'Últimos 3 meses', d1: dmas(HASTA, -91), d2: HASTA },
     { id: '12m', label: 'Últimos 12 meses', d1: dmas(anioMenos(HASTA), 1), d2: HASTA },
     ...anios.filter(y => y < HASTA.slice(0, 4) && y > '2022').reverse().map(y => ({ id: y, label: y, d1: `${y}-01-01`, d2: `${y}-12-31` })),
     { id: 'todo', label: 'Todo', d1: DESDE0, d2: HASTA }];

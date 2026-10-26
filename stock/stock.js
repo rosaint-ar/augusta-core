@@ -122,13 +122,13 @@
 
   // ---------- 5 · compras contra vendido, mes a mes ----------
   function pintarCompras() {
-    const desde = S.ventana === 'todo' ? '2022-12' : mesMenos(MH, S.ventana === '24m' ? 23 : 11), ms = [];
+    const desde = S.ventana === 'todo' ? '2022-12' : mesMenos(MH, { '3m': 2, '24m': 23 }[S.ventana] ?? 11), ms = [];
     for (let m = desde; m <= MH; m = mesMenos(m, -1)) ms.push(m);
     const comp = {}; for (const [f, , , , , , u, costo] of K.compras) { const m = f.slice(0, 7); comp[m] = (comp[m] || 0) + u * costo * def(m); }
     const max = Math.max(...ms.map(m => Math.max(comp[m] || 0, vendidoMes[m] || 0)), 1), { tope, paso } = C.escala(max);
     const el = $('#compras');
     el.innerHTML = `<div class="cab"><div><h2>Compras contra lo que se vendió</h2><p class="ayuda">Mes a mes, en pesos de hoy: lo que se le compró a proveedores (columnas) y el costo de las prendas que se vendieron (línea). Si las columnas pasan la línea mucho tiempo, se acumula stock.</p></div>
-      <div class="ops">${[['12m', '12 meses'], ['24m', '24 meses'], ['todo', 'Todo']].map(([k, t]) => `<button class="chip ${S.ventana === k ? 'activo' : ''}" data-ventana="${k}">${t}</button>`).join('')}</div></div>
+      <div class="ops">${[['3m', '3 meses'], ['12m', '12 meses'], ['24m', '24 meses'], ['todo', 'Todo']].map(([k, t]) => `<button class="chip ${S.ventana === k ? 'activo' : ''}" data-ventana="${k}">${t}</button>`).join('')}</div></div>
       <div class="leyenda"><span><i style="background:var(--a-2)"></i>Compras</span><span><i style="background:var(--violeta);height:3px;width:16px;vertical-align:3px"></i>Costo de lo vendido</span></div><div id="g-comp"></div>`;
     const g = $('#g-comp'), W = Math.max(300, g.clientWidth), H = 240, izq = 58, abajo = 24, arriba = 10, ancho = (W - izq) / ms.length, barra = Math.min(24, ancho * .6);
     const y = v => arriba + (H - arriba - abajo) * (1 - v / tope), cx = i => izq + i * ancho + ancho / 2;
@@ -151,7 +151,7 @@
 
   // ---------- 6 · proveedores ----------
   function pintarProvs() {
-    const desde = S.ventana === 'todo' ? '0000' : mesMenos(MH, S.ventana === '24m' ? 23 : 11);
+    const desde = S.ventana === 'todo' ? '0000' : mesMenos(MH, { '3m': 2, '24m': 23 }[S.ventana] ?? 11);
     const P = {};
     for (const [f, prov, cod0, , , , u, costo] of K.compras) { if (f.slice(0, 7) < desde) continue; const cod = actual(cod0);
       const x = P[prov] ||= { prov, u: 0, $: 0, fechas: new Set(), prods: {}, ult: '' }; x.u += u; x.$ += u * costo * def(f.slice(0, 7)); x.fechas.add(f); if (f > x.ult) x.ult = f;
@@ -165,7 +165,7 @@
     const q = S.buscarProv.trim().toLowerCase();
     const vis = filas.filter(x => !q || x.prov.toLowerCase().includes(q)).sort((a, b) => b.$ - a.$);
     const max = vis[0]?.$ || 1;
-    $('#provs').innerHTML = `<div class="cab"><div><h2>Proveedores</h2><p class="ayuda">${S.ventana === 'todo' ? 'Desde dic-2022' : `Últimos ${S.ventana === '24m' ? 24 : 12} meses`}, en pesos de hoy. "Se vendió" = prendas vendidas de sus productos desde que se las compramos, sobre lo comprado.</p></div>
+    $('#provs').innerHTML = `<div class="cab"><div><h2>Proveedores</h2><p class="ayuda">${S.ventana === 'todo' ? 'Desde dic-2022' : `Últimos ${{ '3m': 3, '24m': 24 }[S.ventana] ?? 12} meses`}, en pesos de hoy. "Se vendió" = prendas vendidas de sus productos desde que se las compramos, sobre lo comprado.</p></div>
       <div class="ops"><input class="buscar" id="buscar-prov" placeholder="Buscar proveedor" value="${C.esc(S.buscarProv)}"></div></div>
       <div class="tabla-scroll"><table class="t"><thead><tr><th>Proveedor</th><th></th><th class="n">Comprado</th><th class="n">Prendas</th><th class="n">Compras</th><th class="n">Productos</th><th class="n">Se vendió</th><th class="n">Margen</th><th class="n">Última compra</th></tr></thead><tbody>
       ${vis.map(x => `<tr><td class="nombre">${C.esc(x.prov)}</td><td style="width:14%"><div class="barrita"><i style="width:${x.$ / max * 100}%"></i></div></td><td class="n">${C.plata(x.$)}</td><td class="n">${C.n(x.u)}</td><td class="n">${x.fechas.size}</td><td class="n">${x.nprods}</td>

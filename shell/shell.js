@@ -9,7 +9,8 @@
     { id: 'metricas', label: 'Métricas', href: 'metricas/', icono: 'M4 19V9m5 10V5m5 14v-7m5 7V8' },
     { id: 'productos', label: 'Productos', href: 'productos/', icono: 'M6 4h12l2 5-8 11L4 9z' },
     { id: 'stock', label: 'Stock y compras', href: 'stock/', icono: 'M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7' },
-    { id: 'clientas', label: 'Clientas', icono: 'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0', pronto: true },
+    { id: 'clima', label: 'Clima y temporadas', href: 'clima/', icono: 'M12 3v2M5.6 5.6l1.4 1.4M3 12h2M17 7l1.4-1.4M16 12a4 4 0 10-8 0M4 18h12a3 3 0 000-6h-.5M7 21h9' },
+    { id: 'clientas', label: 'Clientas', href: 'clientas/', icono: 'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0' },
     { grupo: 'Negocio' },
     { id: 'local', label: 'Horarios del local', href: 'local/', icono: 'M12 7v5l3 2M12 21a9 9 0 100-18 9 9 0 000 18z' },
     { id: 'finanzas', label: 'Finanzas', icono: 'M4 7h16v12H4zM4 11h16M8 15h3', pronto: true },
@@ -86,6 +87,22 @@
   CORE.compras = async function () {
     if (LOCAL) { const r = await fetch(raiz + '_local/compras.json', { cache: 'no-store' }); if (!r.ok) throw new Error('No encuentro _local/compras.json'); return r.json(); }
     const { data, error } = await sb.rpc('core_compras');
+    if (error) throw new Error(error.message);
+    return data;
+  };
+
+  // clima por zona, clima de cada producto y clientas por zona (para Clima y temporadas)
+  CORE.clima = async function () {
+    if (LOCAL) { const r = await fetch(raiz + '_local/clima.json', { cache: 'no-store' }); if (!r.ok) throw new Error('No encuentro _local/clima.json'); return r.json(); }
+    const { data, error } = await sb.rpc('core_clima_paquete');
+    if (error) throw new Error(error.message);
+    return data;
+  };
+
+  // pedidos de Tienda Nube por clienta (para Clientas)
+  CORE.clientas = async function () {
+    if (LOCAL) { const r = await fetch(raiz + '_local/clientas.json', { cache: 'no-store' }); if (!r.ok) throw new Error('No encuentro _local/clientas.json'); return r.json(); }
+    const { data, error } = await sb.rpc('core_clientas');
     if (error) throw new Error(error.message);
     return data;
   };
