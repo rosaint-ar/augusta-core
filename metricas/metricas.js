@@ -320,19 +320,19 @@
 
   // ---------- 8 · stock (foto de FactuSOL) ----------
   function pintarStock() {
-    const corte = dmas(HASTA, -90);
+    const vivo = D.stock_fuente === 'percha', corte = dmas(D.stock_fecha || HASTA, -90);
     const filas = D.stock.map(([cod, fam, u, costo]) => ({ cod, fam, u, costo, ult: D.ultima_venta?.[cod] || null }));
     const totU = filas.reduce((s, x) => s + x.u, 0), totV = filas.reduce((s, x) => s + x.costo, 0);
     const parado = filas.filter(x => !x.ult || x.ult < corte).sort((a, b) => b.costo - a.costo);
     const pU = parado.reduce((s, x) => s + x.u, 0), pV = parado.reduce((s, x) => s + x.costo, 0);
-    $('#stock').innerHTML = `<h2>Stock parado</h2><p class="ayuda">Foto del stock de FactuSOL al ${C.fecha(HASTA)}, a costo. "Parado" = sin ventas en los últimos 90 días.</p>
+    $('#stock').innerHTML = `<h2>Stock parado</h2><p class="ayuda">${vivo ? `Stock de hoy en Percha (${C.fecha(D.stock_fecha)})` : `Foto del stock de FactuSOL al ${C.fecha(D.stock_fecha || HASTA)}`}, a costo. "Parado" = sin ventas en los últimos 90 días.</p>
       <div class="kpis-chicos" style="margin-bottom:14px">
         <div><div class="et" style="font:600 12.5px var(--f-ui);color:var(--tinta-2)">Stock total</div><div class="num" style="font-size:24px;margin-top:6px">${C.compacto(totV)}</div><div class="sub" style="font-size:12.5px;color:var(--tinta-3)">${C.n(totU)} u.</div></div>
         <div><div class="et" style="font:600 12.5px var(--f-ui);color:var(--tinta-2)">Parado</div><div class="num" style="font-size:24px;margin-top:6px">${C.compacto(pV)}</div><div class="sub" style="font-size:12.5px;color:var(--tinta-3)">${C.n(pU)} u. · ${C.pct(pV / (totV || 1))} del valor</div></div>
         <div><div class="et" style="font:600 12.5px var(--f-ui);color:var(--tinta-2)">Productos parados</div><div class="num" style="font-size:24px;margin-top:6px">${C.n(parado.length)}</div><div class="sub" style="font-size:12.5px;color:var(--tinta-3)">de ${C.n(filas.length)} con stock</div></div></div>
       <div class="tabla-scroll"><table class="t"><thead><tr><th>Lo que más plata tiene parada</th><th class="n">Unid.</th><th class="n">A costo</th><th class="n">Última venta</th></tr></thead><tbody>
       ${parado.slice(0, 8).map(x => `<tr><td><div class="nombre">${C.esc(artNombre(x.cod))}</div><div class="sub">${C.esc(famNombre(x.fam))}</div></td><td class="n">${C.n(x.u)}</td><td class="n">${C.plata(x.costo)}</td><td class="n">${x.ult ? C.fecha(x.ult) : 'nunca'}</td></tr>`).join('')}</tbody></table></div>
-      <p class="pie-nota">El stock vivo se lleva en Percha desde el 23/10/2026; esta foto sirve para ver lo que venía acumulado.</p>`;
+      <p class="pie-nota">${vivo ? 'Sin kits (su stock es el de sus componentes); las bolsas genéricas como BOMBIS VARIAS sí cuentan.' : 'El stock vivo se lleva en Percha desde el 23/10/2026; esta foto sirve para ver lo que venía acumulado.'}</p>`;
   }
 
   // ---------- 9 · compras contra ventas ----------
@@ -369,7 +369,7 @@
   function todo() {
     const { d1, d2, p1, p2 } = periodo();
     pintarFiltros();
-    $('#nota').textContent = `Datos de FactuSOL del ${C.fecha(DESDE0)} al ${C.fecha(HASTA)}${D.fuente === 'csv' ? ' · vista local armada desde los CSV' : ''} · ${S.real ? `pesos de ${C.MESES[+mesBase.slice(5, 7) - 1]} ${mesBase.slice(0, 4)} según IPC del INDEC` : 'pesos de cada momento'}.`;
+    $('#nota').textContent = `Ventas del ${C.fecha(DESDE0)} al ${C.fecha(HASTA)}: FactuSOL hasta el 22 oct 2026 y Percha desde el 23${D.fuente === 'csv' ? ' · vista local armada desde los CSV' : ''} · ${S.real ? `pesos de ${C.MESES[+mesBase.slice(5, 7) - 1]} ${mesBase.slice(0, 4)} según IPC del INDEC` : 'pesos de cada momento'}.`;
     const A = sumar(d1, d2), B = sumar(p1, p2);
     pintarKpis(A, B, d1, d2); pintarMesAMes(A, d1, d2); pintarEstacional(); pintarCanales(A, B); pintarPagos(d1, d2);
     pintarFamilias(A, B); pintarProductos(d1, d2); pintarTalles(d1, d2); pintarStock(); pintarCompras();

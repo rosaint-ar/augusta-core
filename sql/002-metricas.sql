@@ -82,7 +82,8 @@ begin
     select to_char((v.fecha at time zone 'America/Argentina/Buenos_Aires')::date, 'YYYY-MM'), coalesce(f.nombre, 'Sin dato'), sum(vp.monto)
       from ventas v join venta_pagos vp on vp.venta_id = v.id left join formas_pago f on f.id = vp.forma_pago_id
      where v.empresa_id = e and v.estado <> 'anulada' and not coalesce(v.reservada, false) group by 1, 2),
-  foto as (select max(ejercicio) ej from fs_stock_foto)
+  foto as (select max(ejercicio) ej from fs_stock_foto),
+  vivo as (select core_stock_vivo() j)
   select jsonb_build_object(
     'generado', now(), 'fuente', 'base', 'hasta', (select max(f) from l),
     'ipc', (select jsonb_object_agg(to_char(mes, 'YYYY-MM'), indice) from core_ipc),
@@ -113,13 +114,15 @@ begin
          where co.fecha is not null and coalesce(a.familia, '') <> '99' and cl.articulo not in ('100000', '200000', '300000', '400000')
          group by 1, 2) x),
     'pagos', (select coalesce(jsonb_agg(jsonb_build_array(m, n, round(t, 2))), '[]') from pagos),
-    'stock', (select coalesce(jsonb_agg(jsonb_build_array(articulo, fam, round(u, 2), round(costo, 2))), '[]') from (
+    'stock_fuente', case when jsonb_array_length(vivo.j) > 0 then 'percha' else 'factusol' end,
+    'stock_fecha', case when jsonb_array_length(vivo.j) > 0 then to_char(now() at time zone 'America/Argentina/Buenos_Aires', 'YYYY-MM-DD') else (select max(fecha_foto)::text from fs_stock_foto) end,
+    'stock', case when jsonb_array_length(vivo.j) > 0 then vivo.j else (select coalesce(jsonb_agg(jsonb_build_array(articulo, fam, round(u, 2), round(costo, 2))), '[]') from (
         select s.articulo, max(a.familia) fam, sum(s.stock) u, sum(s.stock * coalesce(a.costo, 0)) costo
           from fs_stock_foto s join foto on s.ejercicio = foto.ej
           join fs_articulos_anio a on a.ejercicio = s.ejercicio and a.codigo = s.articulo
          where coalesce(a.familia, '') <> '99' and s.articulo not in ('100000', '200000', '300000', '400000')
-         group by s.articulo having sum(s.stock) > 0) x)
-  ) into res;
+         group by s.articulo having sum(s.stock) > 0) x) end
+  ) into res from vivo;
   return res;
 end $$;
 revoke all on function core_dataset() from public, anon;
