@@ -99,3 +99,6 @@ table.t .sub { color: var(--tinta-3); font-size: 12.5px; }
 .delta.sube { color: var(--bien); background: #E3F1EA; }
 .delta.baja { color: var(--mal); background: #F7E4E2; }
 .delta.igual { color: var(--tinta-2); background: var(--linea-2); }
+
+/* una tabla ancha nunca ensancha la página: se desplaza dentro de su tarjeta */
+.tarjeta, .grilla > * { min-width: 0; }

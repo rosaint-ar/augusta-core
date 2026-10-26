@@ -11,7 +11,7 @@
     { id: 'stock', label: 'Stock y compras', icono: 'M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7', pronto: true },
     { id: 'clientas', label: 'Clientas', icono: 'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0', pronto: true },
     { grupo: 'Negocio' },
-    { id: 'local', label: 'Horarios del local', icono: 'M12 7v5l3 2M12 21a9 9 0 100-18 9 9 0 000 18z', pronto: true },
+    { id: 'local', label: 'Horarios del local', href: 'local/', icono: 'M12 7v5l3 2M12 21a9 9 0 100-18 9 9 0 000 18z' },
     { id: 'finanzas', label: 'Finanzas', icono: 'M4 7h16v12H4zM4 11h16M8 15h3', pronto: true },
     { grupo: 'Sistema' },
     { id: 'fuentes', label: 'Fuentes de datos', icono: 'M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zm0 0v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3', pronto: true },
@@ -70,6 +70,14 @@
   CORE.producto = async function (codigo) {
     if (LOCAL) { const r = await fetch(raiz + '_local/productos/' + encodeURIComponent(codigo) + '.json', { cache: 'no-store' }); if (!r.ok) throw new Error('La vista local solo tiene algunas fichas de prueba.'); return r.json(); }
     const { data, error } = await sb.rpc('core_producto', { p_codigo: codigo });
+    if (error) throw new Error(error.message);
+    return data;
+  };
+
+  // tickets del local con hora real (para Horarios del local)
+  CORE.horario = async function () {
+    if (LOCAL) { const r = await fetch(raiz + '_local/horario.json', { cache: 'no-store' }); if (!r.ok) throw new Error('No encuentro _local/horario.json'); return r.json(); }
+    const { data, error } = await sb.rpc('core_horario');
     if (error) throw new Error(error.message);
     return data;
   };
