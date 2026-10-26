@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="app-root" content="../">
+<title>Productos · Augusta Core</title>
+<link rel="icon" href="../shell/simbolo-augusta.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shell/shell.css">
+<style>
+  .filtros { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-bottom: 16px; position: relative; z-index: 1; }
+  .filtros .grupo { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .filtros .grupo > span { font: 700 10.5px/1 var(--f-ui); letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-3); margin-right: 4px; }
+  .filtros select { font: 600 13px var(--f-ui); color: var(--tinta); border: 1px solid var(--linea); background: var(--papel); border-radius: 99px; padding: 6px 10px; }
+  .buscar { font: 400 14px var(--f-texto); border: 1px solid var(--linea); border-radius: 99px; padding: 8px 14px; min-width: 240px; outline: none; background: var(--papel); }
+  .buscar:focus { border-color: var(--lavanda); box-shadow: 0 0 0 3px var(--lila); }
+  .resumen { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 16px; position: relative; z-index: 1; }
+  .resumen .tarjeta { padding: 14px 16px; cursor: pointer; transition: border-color .15s, transform .15s; }
+  .resumen .tarjeta:hover { border-color: var(--lavanda); transform: translateY(-1px); }
+  .resumen .tarjeta.activo { border-color: var(--violeta); box-shadow: 0 0 0 2px var(--lila); }
+  .resumen .et { font: 600 12.5px var(--f-ui); color: var(--tinta-2); display: flex; align-items: center; gap: 6px; }
+  .resumen .valor { font: 500 26px/1.1 var(--f-titulo); margin: 8px 0 2px; }
+  .resumen .det { font-size: 12.5px; color: var(--tinta-3); }
+  .estado { display: inline-flex; align-items: center; gap: 5px; font: 700 11.5px var(--f-ui); border-radius: 99px; padding: 3px 8px; white-space: nowrap; }
+  .estado::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .e-quiebre { color: #B4443E; background: #F7E4E2; } .e-parado { color: #8A6A1F; background: #F6EDD6; }
+  .e-estrella { color: var(--ciruela); background: var(--lila); } .e-ok { color: var(--bien); background: #E3F1EA; } .e-sin { color: var(--tinta-3); background: var(--linea-2); }
+  table.t th { cursor: pointer; user-select: none; } table.t th.orden::after { content: ' ↓'; color: var(--violeta); }
+  table.t tbody tr { cursor: pointer; } table.t tbody tr:hover td { background: #FBFAFC; }
+  .mas { margin-top: 12px; }
+  /* ficha */
+  .velo { position: fixed; inset: 0; background: rgba(70,83,98,.28); z-index: 30; opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .velo.abierto { opacity: 1; pointer-events: auto; }
+  .ficha { position: fixed; top: 0; right: 0; bottom: 0; width: min(880px, 100%); background: var(--blanco); z-index: 31; transform: translateX(102%); transition: transform .25s ease; overflow-y: auto; box-shadow: -20px 0 50px -20px rgba(70,83,98,.35); }
+  .ficha.abierta { transform: none; }
+  .ficha .cab-f { position: sticky; top: 0; z-index: 2; display: flex; gap: 16px; align-items: center; padding: 18px 24px; background: rgba(247,248,244,.94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--linea-2); }
+  .ficha .cab-f img { width: 64px; height: 64px; object-fit: cover; border-radius: 12px; border: 1px solid var(--linea); background: var(--papel); }
+  .ficha .cab-f h2 { margin: 0; font: 500 22px/1.15 var(--f-titulo); color: var(--violeta); }
+  .ficha .cab-f .sub { color: var(--tinta-2); font-size: 13.5px; margin-top: 3px; }
+  .ficha .cerrar { margin-left: auto; background: var(--papel); border: 1px solid var(--linea); border-radius: 99px; width: 36px; height: 36px; cursor: pointer; font-size: 18px; color: var(--tinta-2); flex: none; }
+  .ficha .cuerpo { padding: 20px 24px 48px; display: grid; gap: 16px; }
+  .ficha .cuerpo > *, .tiles > * { min-width: 0; }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .tiles .tarjeta { padding: 14px 16px; }
+  .tiles .et { font: 600 12px var(--f-ui); color: var(--tinta-2); }
+  .tiles .valor { font: 500 24px/1.1 var(--f-titulo); margin: 6px 0 2px; color: var(--tinta); }
+  .tiles .det { font-size: 12.5px; color: var(--tinta-3); }
+  .matriz { border-collapse: separate; border-spacing: 4px; font-size: 13px; }
+  .matriz th { font: 700 11px var(--f-ui); color: var(--tinta-3); text-transform: uppercase; letter-spacing: .05em; padding: 4px 6px; text-align: center; }
+  .matriz th.c { text-align: left; text-transform: none; letter-spacing: 0; font-size: 13px; color: var(--tinta); white-space: nowrap; }
+  .matriz td { min-width: 62px; text-align: center; border-radius: 8px; padding: 6px 4px; background: var(--linea-2); line-height: 1.15; }
+  .matriz td b { display: block; font: 600 14px var(--f-ui); color: var(--tinta); }
+  .matriz td small { color: var(--tinta-2); font-size: 11.5px; }
+  .matriz td.quiebre { box-shadow: inset 0 0 0 2px #E4A7A2; }
+  .matriz td.vacia { background: transparent; color: var(--tinta-3); }
+  .pie-nota { font-size: 12.5px; color: var(--tinta-3); margin-top: 8px; }
+  .aviso-f { color: var(--tinta-2); padding: 24px; }
+  @media (max-width: 900px) { .resumen, .tiles { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .ficha .cuerpo, .ficha .cab-f { padding-left: 16px; padding-right: 16px; } .buscar { min-width: 0; width: 100%; } }
+</style>
+</head>
+<body data-page="productos" data-title="Productos" data-subtitle="Qué se vende, qué falta y qué está parado — con la historia completa de cada prenda">
+<main id="contenido"><div class="cargando">Ordenando el catálogo…</div></main>
+<div class="velo" id="velo"></div>
+<aside class="ficha" id="ficha" aria-label="Ficha del producto" aria-hidden="true"></aside>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="../shared/supabase.js"></script>
+<script src="../shell/shell.js"></script>
+<script src="productos.js"></script>
+</body>
+</html>

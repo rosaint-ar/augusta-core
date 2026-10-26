@@ -36,13 +36,15 @@ with fs as (
     coalesce(l.cantidad, 0) as u,
     coalesce(l.total, 0) * case when abs(s.tl) < 0.005 then 1 else coalesce(r.total, 0) / s.tl end as v,
     coalesce(l.costo_unit, 0) as cu,
-    nullif(trim(coalesce(t.nombre, l.talle)), '') as talle
+    nullif(trim(coalesce(t.nombre, l.talle)), '') as talle,
+    nullif(trim(coalesce(co.nombre, l.color)), '') as color
   from fs_remitos r
   join fs_remito_lineas l on l.remito_id = r.id
   join (select remito_id, sum(coalesce(total, 0)) as tl from fs_remito_lineas group by remito_id) s on s.remito_id = r.id
   left join fs_articulos_anio a on a.ejercicio = r.ejercicio and a.codigo = l.articulo
   left join fs_formas_pago_anio fp on fp.ejercicio = r.ejercicio and fp.codigo = r.forma_pago
   left join fs_talles_anio t on t.ejercicio = r.ejercicio and t.codigo = l.talle
+  left join fs_colores_anio co on co.ejercicio = r.ejercicio and co.codigo = l.color
   where r.cliente_nombre is distinct from 'AJUSTE DE STOCK' and r.fecha is not null and r.venta_id is null and r.omitido is null
 ), pv as (
   select v.id::text as doc, (v.fecha at time zone 'America/Argentina/Buenos_Aires')::date as f,
@@ -56,7 +58,8 @@ with fs as (
     coalesce(l.total, 0) * case when abs(sum(coalesce(l.total, 0)) over (partition by v.id)) < 0.005 then 1
                                else coalesce(v.total, 0) / sum(coalesce(l.total, 0)) over (partition by v.id) end as v,
     coalesce(l.costo_unit, 0) as cu,
-    nullif(trim(l.talle), '') as talle
+    nullif(trim(l.talle), '') as talle,
+    nullif(trim(l.color), '') as color
   from ventas v
   join venta_lineas l on l.venta_id = v.id
   left join productos p on p.id = l.producto_id
@@ -64,6 +67,14 @@ with fs as (
   where v.empresa_id = '82c05bbf-e63e-4d25-a762-6f1ee6d27f43' and v.estado <> 'anulada' and not coalesce(v.reservada, false)
 )
 select 'factusol'::text as fuente, * from fs union all select 'percha', * from pv;
+
+-- Productos que Percha recodificó: código viejo de FactuSOL → código actual (sale de 'Código anterior: X' en la descripción)
+create or replace function core_alias() returns jsonb language sql stable security invoker set search_path = public as $$
+  select coalesce(jsonb_object_agg(viejo, codigo), '{}') from (
+    select distinct on (viejo) substring(descripcion from '(?i)c.digo anterior:? *([0-9A-Za-z-]+)') viejo, codigo
+      from productos where empresa_id = '82c05bbf-e63e-4d25-a762-6f1ee6d27f43' and descripcion ~* 'c.digo anterior'
+     order by viejo, activo desc, codigo) x where viejo is not null and viejo <> codigo
+$$;
 
 create or replace function core_dataset() returns jsonb language plpgsql stable security invoker set search_path = public as $$
 declare
@@ -85,7 +96,7 @@ begin
   foto as (select max(ejercicio) ej from fs_stock_foto),
   vivo as (select core_stock_vivo() j)
   select jsonb_build_object(
-    'generado', now(), 'fuente', 'base', 'hasta', (select max(f) from l),
+    'generado', now(), 'fuente', 'base', 'hasta', (select max(f) from l), 'alias', core_alias(),
     'ipc', (select jsonb_object_agg(to_char(mes, 'YYYY-MM'), indice) from core_ipc),
     'familias', (select jsonb_object_agg(codigo, nombre) from (select distinct on (codigo) codigo, nombre from fs_familias_anio order by codigo, ejercicio desc) x),
     'articulos', (select jsonb_object_agg(codigo, nombre) from (

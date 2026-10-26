@@ -7,7 +7,7 @@
   const MENU = [
     { grupo: 'Análisis' },
     { id: 'metricas', label: 'Métricas', href: 'metricas/', icono: 'M4 19V9m5 10V5m5 14v-7m5 7V8' },
-    { id: 'productos', label: 'Productos', icono: 'M6 4h12l2 5-8 11L4 9z', pronto: true },
+    { id: 'productos', label: 'Productos', href: 'productos/', icono: 'M6 4h12l2 5-8 11L4 9z' },
     { id: 'stock', label: 'Stock y compras', icono: 'M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7', pronto: true },
     { id: 'clientas', label: 'Clientas', icono: 'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0', pronto: true },
     { grupo: 'Negocio' },
@@ -18,6 +18,25 @@
   ];
 
   const CORE = window.CORE = { raiz, local: LOCAL, usuario: null };
+
+  // canales: orden y colores fijos (validados para daltonismo); el color sigue al canal, nunca al ranking
+  CORE.CANALES = [
+    { id: 'Local', color: 'var(--c-local)' }, { id: 'Tienda Nube', color: 'var(--c-tn)' }, { id: 'Mercado Libre', color: 'var(--c-ml)' },
+    { id: 'WhatsApp y redes', color: 'var(--c-wsp)' }, { id: 'Clientas con ficha', color: 'var(--c-cli)' }];
+
+  // tooltip común
+  CORE.tip = (html, e) => {
+    let t = document.getElementById('tip'); if (!t) { t = document.createElement('div'); t.id = 'tip'; t.className = 'tip'; t.setAttribute('role', 'tooltip'); document.body.appendChild(t); }
+    t.innerHTML = html; t.style.display = 'block';
+    const r = t.getBoundingClientRect(); let x = e.clientX + 16, y = e.clientY + 14;
+    if (x + r.width > innerWidth - 8) x = e.clientX - r.width - 16; if (y + r.height > innerHeight - 8) y = innerHeight - r.height - 8;
+    t.style.left = Math.max(8, x) + 'px'; t.style.top = Math.max(8, y) + 'px';
+  };
+  CORE.tipFuera = () => { const t = document.getElementById('tip'); if (t) t.style.display = 'none'; };
+  // escala de eje con pasos redondos
+  CORE.escala = max => { if (max <= 0) return { tope: 1, paso: 1 };
+    const crudo = max / 4, pot = Math.pow(10, Math.floor(Math.log10(crudo))), n = crudo / pot;
+    const paso = (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * pot; return { tope: Math.ceil(max / paso) * paso, paso }; };
 
   // ---------- formatos (es-AR) ----------
   const nf0 = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 });
@@ -47,9 +66,17 @@
     return (paquete = data);
   };
 
+  // ficha completa de un producto (historia de ventas, compras, stock por talle·color)
+  CORE.producto = async function (codigo) {
+    if (LOCAL) { const r = await fetch(raiz + '_local/productos/' + encodeURIComponent(codigo) + '.json', { cache: 'no-store' }); if (!r.ok) throw new Error('La vista local solo tiene algunas fichas de prueba.'); return r.json(); }
+    const { data, error } = await sb.rpc('core_producto', { p_codigo: codigo });
+    if (error) throw new Error(error.message);
+    return data;
+  };
+
   // ---------- sesión ----------
   async function sesion() {
-    if (LOCAL) { CORE.usuario = { email: 'vista local (datos de prueba desde CSV)' }; return true; }
+    if (LOCAL) { CORE.usuario = { email: 'vista local, sin login' }; return true; }
     const { data: { session } } = await sb.auth.getSession();
     if (!session) { location.replace(raiz + 'login.html?volver=' + encodeURIComponent(location.pathname + location.search)); return false; }
     CORE.usuario = session.user;
