@@ -1,0 +1,56 @@
+/* Etiquetas de Augusta — estilos compartidos por la web y la vista previa del Core.
+ * El contenedor (foto de la tarjeta o de la ficha) lleva .aet-anfitrion (posición relativa). */
+.aet-anfitrion { position: relative; }
+.aet-pila { position: absolute; z-index: 3; display: flex; flex-direction: column; gap: 6px; pointer-events: none; --aet-margen: 12px; }
+.aet-pos-arriba-izq { top: var(--aet-margen); left: var(--aet-margen); align-items: flex-start; }
+.aet-pos-arriba-der { top: var(--aet-margen); right: var(--aet-margen); align-items: flex-end; }
+.aet-pos-abajo-izq { bottom: var(--aet-margen); left: var(--aet-margen); align-items: flex-start; flex-direction: column-reverse; }
+.aet-pos-abajo-der { bottom: var(--aet-margen); right: var(--aet-margen); align-items: flex-end; flex-direction: column-reverse; }
+.aet-pos-centro { top: 50%; left: 50%; transform: translate(-50%, -50%); align-items: center; }
+.aet-pos-franja-arriba, .aet-pos-franja-abajo { left: 0; right: 0; gap: 0; }
+.aet-pos-franja-arriba { top: 0; }
+.aet-pos-franja-abajo { bottom: 0; }
+.aet-pos-franja-arriba .aet, .aet-pos-franja-abajo .aet { width: 100%; justify-content: center; border-radius: 0 !important; box-sizing: border-box; }
+.aet-pos-cinta { top: 0; left: 0; width: 130px; height: 130px; overflow: hidden; }
+.aet-pos-cinta .aet { position: absolute; top: 26px; left: -40px; width: 170px; justify-content: center; transform: rotate(-45deg); border-radius: 0 !important; box-sizing: border-box; }
+
+.aet { position: relative; overflow: hidden; display: inline-flex; align-items: center; gap: 5px; max-width: 100%;
+  padding: var(--aet-py) var(--aet-px); background: var(--aet-fondo); color: var(--aet-color);
+  border: var(--aet-borde-ancho) solid var(--aet-borde); font-family: var(--aet-fuente); font-style: var(--aet-estilo);
+  font-weight: var(--aet-peso); font-size: var(--aet-tam); line-height: 1.25; letter-spacing: var(--aet-esp); text-align: left; white-space: nowrap; }
+.aet-txt { display: flex; flex-direction: column; min-width: 0; }
+.aet-t { font: inherit; overflow: hidden; text-overflow: ellipsis; }
+.aet-t2 { font-size: .82em; font-weight: inherit; opacity: .9; letter-spacing: normal; text-transform: none; }
+.aet-mayus .aet-t { text-transform: uppercase; }
+.aet-ic { width: 1.25em; height: 1.25em; flex: none; fill: currentColor; }
+.aet-sombra { box-shadow: 0 4px 14px rgba(70, 54, 79, .25); }
+.aet-forma-rect { border-radius: 0; }
+.aet-forma-redondeada { border-radius: 6px; }
+.aet-forma-pildora { border-radius: 999px; }
+.aet-forma-circulo { border-radius: 50%; width: calc(var(--aet-tam) * 5.4); height: calc(var(--aet-tam) * 5.4); padding: 4px; justify-content: center; text-align: center; white-space: normal; flex-direction: column; gap: 2px; }
+.aet-forma-circulo .aet-txt { align-items: center; }
+
+/* animaciones (nunca con «reducir movimiento») */
+.aet-anim-brillo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%); transform: translateX(-120%); animation: aet-brillo 3.2s ease-in-out infinite; }
+@keyframes aet-brillo { 0%, 55% { transform: translateX(-120%); } 85%, 100% { transform: translateX(120%); } }
+.aet-anim-pulso { animation: aet-pulso 2.4s ease-in-out infinite; }
+@keyframes aet-pulso { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+.aet-anim-latido { animation: aet-latido 1.8s ease-in-out infinite; }
+@keyframes aet-latido { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+.aet-anim-balanceo { animation: aet-balanceo 3s ease-in-out infinite; transform-origin: 50% 0; }
+@keyframes aet-balanceo { 0%, 70%, 100% { transform: rotate(0); } 78% { transform: rotate(-5deg); } 86% { transform: rotate(4deg); } 94% { transform: rotate(-2deg); } }
+.aet-pos-cinta .aet-anim-pulso, .aet-pos-cinta .aet-anim-balanceo, .aet-pos-centro .aet-anim-pulso { animation: none; }
+@media (prefers-reduced-motion: reduce) { .aet, .aet::after { animation: none !important; } }
+
+/* recuadro de la ficha, arriba del precio */
+.aet-ficha { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--aet-fondo); border-left-width: 4px; background: #fff; font: 400 14px/1.4 Source, 'Source Sans 3', system-ui, sans-serif; color: #465362; }
+.aet-ficha-marca { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; background: var(--aet-fondo); color: var(--aet-color); font: 600 10px/1.3 DM, 'DM Sans', sans-serif; letter-spacing: .6px; text-transform: uppercase; }
+.aet-ficha-txt { flex: 1 1 220px; }
+
+/* celular: un poco más chicas y más pegadas al borde */
+@media (max-width: 600px) {
+  .aet-pila { --aet-margen: 8px; gap: 4px; }
+  .aet { font-size: calc(var(--aet-tam) * .88); padding: calc(var(--aet-py) * .8) calc(var(--aet-px) * .8); }
+  .aet-pos-cinta { width: 104px; height: 104px; }
+  .aet-pos-cinta .aet { top: 20px; left: -36px; width: 146px; }
+}
