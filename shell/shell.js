@@ -12,6 +12,7 @@
     { id: 'clima', label: 'Clima y temporadas', href: 'clima/', icono: 'M12 3v2M5.6 5.6l1.4 1.4M3 12h2M17 7l1.4-1.4M16 12a4 4 0 10-8 0M4 18h12a3 3 0 000-6h-.5M7 21h9' },
     { id: 'clientas', label: 'Clientas', href: 'clientas/', icono: 'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0' },
     { grupo: 'Tienda web' },
+    { id: 'maestro', label: 'Maestro de productos', href: 'maestro/', icono: 'M4 5h16M4 10h16M4 15h10M4 20h7M17 15l2 2 3-4' },
     { id: 'etiquetas', label: 'Etiquetas', href: 'etiquetas/', icono: 'M3 12V4h8l10 10-8 8L3 12zM7.5 8.5h.01' },
     { grupo: 'Negocio' },
     { id: 'local', label: 'Horarios del local', href: 'local/', icono: 'M12 7v5l3 2M12 21a9 9 0 100-18 9 9 0 000 18z' },
